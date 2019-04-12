@@ -30,13 +30,21 @@
 // DDOES:
 window.addEventListener('load', function () {
       // DVARL:
-      var orderForm = document.forms.orderForm;
+      var orderForm = document.forms.orderForm,
+            planOptions = document.querySelectorAll('input[name= "protection"]');
       // DVARO:
       orderForm.elements.orderDate.value = new Date().toDateString();
       // DDOES:
       orderForm.elements.model.focus();
       // DFUNC:
       calcOrder();
+      // DDOES:
+      orderForm.elements.model.onchange = calcOrder;
+      orderForm.elements.qty.onchange = calcOrder;
+      // DLOOP:
+      for (var i = 0; i < planOptions.length; i++) {
+            planOptions[i].onclick = calcOrder;
+      };
 });
 // DFUNC:
 function calcOrder() {
@@ -51,10 +59,26 @@ function calcOrder() {
             salesTax = 0.05 * (initialCost + pCost),
             totalCost = initialCost + pCost + salesTax;
       // DDOES:
-      orderForm.elements.initialCost.value = initialCost;
-      orderForm.elements.protectionCost.value = pCost;
-      orderForm.elements.subtotal.value = initialCost + pCost;
-      orderForm.elements.salesTax.value = salesTax;
-      orderForm.elements.totalCost.value = totalCost;
-
+      orderForm.elements.initialCost.value = formatUSACurrency(initialCost);
+      orderForm.elements.protectionCost.value = formatNumber(pCost, 2);
+      orderForm.elements.subtotal.value = formatNumber(initialCost + pCost, 2);
+      orderForm.elements.salesTax.value = formatNumber(salesTax, 2);
+      orderForm.elements.totalCost.value = formatUSACurrency(totalCost);
+      // DDOES:
+      orderForm.elements.modelName.value = orderForm.elements.model.options[mIndex].text;
+      orderForm.elements.protectionName.value = document.querySelector('input[name="protection"]:checked').nextSibling.nodeValue;
+};
+// DFUNC:
+function formatNumber(val, decimals) {
+      return val.toLocaleString(undefined, {
+            minumumFractionDigits: decimals,
+            maximumFractionDigits: decimals
+      });
+};
+// DFUNC:
+function formatUSACurrency(val) {
+      return val.toLocaleString('en-us', {
+            style: 'currency',
+            currency: "USD"
+      });
 };
