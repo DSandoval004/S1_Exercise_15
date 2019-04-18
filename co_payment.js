@@ -49,21 +49,18 @@ window.addEventListener('load', function () {
       var formData = location.search.slice(1);
       formData = formData.replace(/\+/g, " ");
       formData = decodeURIComponent(formData);
-      var formFields = formData.split(/[&=]/g),
-            form = document.forms.order.elements;
+      var formFields = formData.split(/[&=]/g);
       // DDOES: Write the field values to the order form 
-      form.orderDate.value = formFields[1];
-      form.modelName.value = formFields[5];
-      form.qty.value = formFields[7];
-      form.initialCost.value = formFields[9];
-      form.protectionName.value = formFields[13];
-      form.protectionCost.value = formFields[15];
-      form.subtotal.value = formFields[17];
-      form.salesTax.value = formFields[19];
-      form.totalCost.value = formFields[21];
-});
-
-window.addEventListener('load', function () {
+      document.forms.order.elements.orderDate.value = formFields[1];
+      document.forms.order.elements.modelName.value = formFields[5];
+      document.forms.order.elements.qty.value = formFields[7];
+      document.forms.order.elements.initialCost.value = formFields[9];
+      document.forms.order.elements.protectionName.value = formFields[13];
+      document.forms.order.elements.protectionCost.value = formFields[15];
+      document.forms.order.elements.subtotal.value = formFields[17];
+      document.forms.order.elements.salesTax.value = formFields[19];
+      document.forms.order.elements.totalCost.value = formFields[21];
+      // DDOES:
       document.getElementById('subButton').onclick = runSubmit;
       document.getElementById('cardName').oninput = validateName;
       document.getElementById('cardNumber').oninput = validateNumber;
@@ -71,18 +68,16 @@ window.addEventListener('load', function () {
       document.getElementById('expMonth').onchange = validateMonth;
       document.getElementById('cvc').oninput = validateCVC;
 });
-
+// DFUNC:
 function runSubmit() {
-      console.log("----------------")
       validateName();
       validateCredit();
       validateNumber();
       validateYear();
       validateMonth();
       validateCVC();
-      console.log(6011280768434856)
 }
-
+// DFUNC:
 function validateCVC() {
       var cardCVC = document.getElementById('cvc');
       var creditCard = document.querySelector('input[name="credit"]:checked').value;
@@ -97,63 +92,76 @@ function validateCVC() {
             cardCVC.setCustomValidity("");
       }
 }
-
+// DFUNC:
 function validateMonth() {
       var cardMonth = document.getElementById("expMonth");
       if (cardMonth.selectedIndex === 0) {
-            console.log(51)
             cardMonth.setCustomValidity("Select the expiration month");
-
       } else {
-            console.log(52)
             cardMonth.setCustomValidity("");
       }
 }
-
+// DFUNC:
 function validateYear() {
       var cardYear = document.getElementById("expYear");
       if (cardYear.selectedIndex === 0) {
-            console.log(41)
             cardYear.setCustomValidity("Select the expiration year");
       } else {
-            console.log(42)
-            cardYear.setCustomValidity(" ");
+            cardYear.setCustomValidity("");
       }
 }
-
+// DFUNC:
 function validateNumber() {
       var cardNumber = document.getElementById("cardNumber");
       if (cardNumber.validity.valueMissing) {
-            console.log(31)
             cardNumber.setCustomValidity("Enter your card number");
       } else if (cardNumber.validity.patternMismatch) {
-            console.log(32)
             cardNumber.setCustomValidity("Enter a valid card number");
+      } else if (luhn(cardNumber.value) === false) {
+            cardNumber.setCustomValidity("Enter a legitimate card number");
       } else {
-            console.log(33)
-            cardNumber.setCustomValidity(" ");
+            cardNumber.setCustomValidity("");
       }
 }
-
+// DFUNC:
 function validateCredit() {
       var creditCard = document.forms.payment.elements.credit[0];
       if (creditCard.validity.valueMissing) {
-            console.log(21)
             creditCard.setCustomValidity("Select your credit card");
       } else {
-            console.log(22)
             creditCard.setCustomValidity("");
       }
 
 }
-
+// DFUNC:
 function validateName() {
       var cardName = document.getElementById("cardName");
       if (cardName.validity.valueMissing) {
-            console.log(11)
             cardName.setCustomValidity("Enter your name as it appears on the card");
       } else {
-            console.log(12)
             cardName.setCustomValidity("");
       }
+}
+// DFUNC:
+function sumDigits(numStr) {
+      var digitTotal = 0;
+      for (var i = 0; i < numStr.length; i++) {
+            digitTotal += parseInt(numStr.charAt(i));
+            return digitTotal;
+      }
+}
+// DFUNC:
+function luhn(idNum) {
+      var string1 = "";
+      var string2 = "";
+      // Retrieve the odd-numbered digits 
+      for (var i = idNum.length - 1; i >= 0; i -= 2) {
+            string1 += idNum.charAt(i);
+      }
+      // Retrieve the even-numbered digits and double them 
+      for (var i = idNum.length - 2; i >= 0; i -= 2) {
+            string2 += 2 * idNum.charAt(i);
+      }
+      // Return whether the sum of the digits is divisible by 10 
+      return sumDigits(string1 + string2) % 10 === 0;
 }
